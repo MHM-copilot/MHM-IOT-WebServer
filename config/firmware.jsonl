@@ -1,0 +1,1 @@
+{"id":"firmware-wbsm-lc-ext","name":"firmware-wbsm-lc-ext","version":"2.1.0","device_family":"esp32","description":"Main sensor firmware","binary_path":"firmware-wbsm-lc-ext.bin","elf_path":"firmware-wbsm-lc-ext.elf","enabled":true}

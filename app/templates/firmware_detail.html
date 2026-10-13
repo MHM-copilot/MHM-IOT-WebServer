@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ entry.name }} | {{ title }}</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0f172a;
+        --panel: #111827;
+        --panel-alt: #1f2937;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --accent: #60a5fa;
+        --border: rgba(148, 163, 184, 0.2);
+        --danger: #ef4444;
+      }
+      * { box-sizing: border-box; }
+      body {
+        font-family: Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        margin: 0;
+        padding: 32px 16px;
+      }
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 24px;
+      }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+      a { color: var(--accent); text-decoration: none; }
+      .meta {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+        margin: 20px 0;
+      }
+      .meta-item {
+        background: var(--panel-alt);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+      .meta-item span {
+        display: block;
+        color: var(--muted);
+        font-size: 0.8rem;
+        margin-bottom: 4px;
+      }
+      .actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 20px;
+      }
+      .button {
+        display: inline-block;
+        padding: 10px 14px;
+        border-radius: 10px;
+        background: rgba(96, 165, 250, 0.15);
+        border: 1px solid var(--border);
+        color: var(--accent);
+      }
+      .button.warn {
+        border-color: rgba(239, 68, 68, 0.4);
+        background: rgba(239, 68, 68, 0.08);
+        color: #fca5a5;
+      }
+      .muted { color: var(--muted); }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <div class="topbar">
+        <a href="{{ url_for('index') }}">← Return to catalog</a>
+      </div>
+
+      <section class="card">
+        <h1>{{ entry.name }}</h1>
+        <p class="muted">{{ entry.description or 'No description configured.' }}</p>
+
+        <div class="meta">
+          <div class="meta-item">
+            <span>Version</span>
+            {{ entry.version }}
+          </div>
+          <div class="meta-item">
+            <span>Device family</span>
+            {{ entry.device_family }}
+          </div>
+          <div class="meta-item">
+            <span>Identifier</span>
+            {{ entry.id }}
+          </div>
+        </div>
+
+        <div class="actions">
+          <a class="button" href="{{ url_for('public_download_bin', firmware_id=entry.id) }}">Download .bin</a>
+          <a class="button" href="{{ url_for('protected_download_elf', firmware_id=entry.id) }}">Download .elf</a>
+        </div>
+
+        {% if not entry.binary_exists or not entry.elf_exists %}
+        <p class="muted" style="margin-top: 20px;">
+          Some paired artifacts are not available yet. Place the files in the configured firmware directory and ensure the JSONL paths match.
+        </p>
+        {% endif %}
+      </section>
+    </main>
+  </body>
+</html>
