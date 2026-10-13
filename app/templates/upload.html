@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Upload firmware | {{ title }}</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0f172a;
+        --panel: #111827;
+        --panel-alt: #1f2937;
+        --text: #e5e7eb;
+        --muted: #9ca3af;
+        --accent: #60a5fa;
+        --border: rgba(148, 163, 184, 0.2);
+      }
+      * { box-sizing: border-box; }
+      body { font-family: Arial, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 32px 16px; }
+      .container { max-width: 900px; margin: 0 auto; }
+      .card { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+      form { display: grid; gap: 16px; }
+      label { display: grid; gap: 8px; font-weight: 600; }
+      input, textarea { background: var(--panel-alt); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 10px 12px; font: inherit; }
+      button { padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); background: rgba(96, 165, 250, 0.15); color: var(--accent); font-weight: 700; cursor: pointer; }
+      a { color: var(--accent); text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <div style="margin-bottom: 20px;"><a href="{{ url_for('index') }}">← Back to catalog</a></div>
+      <section class="card">
+        <h1>Upload firmware</h1>
+        <form method="post" enctype="multipart/form-data">
+          <label>
+            Device name
+            <input type="text" name="name" placeholder="ESP32 Sensor v1" required />
+          </label>
+          <label>
+            Version
+            <input type="text" name="version" value="1.0.0" />
+          </label>
+          <label>
+            Device family
+            <input type="text" name="device_family" value="esp32" />
+          </label>
+          <label>
+            Description
+            <textarea name="description" rows="4" placeholder="Short description of the firmware update"></textarea>
+          </label>
+          <label>
+            Binary (.bin)
+            <input type="file" name="binary_file" accept=".bin" required />
+          </label>
+          <label>
+            ELF (.elf)
+            <input type="file" name="elf_file" accept=".elf" required />
+          </label>
+          <button type="submit">Upload firmware</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>

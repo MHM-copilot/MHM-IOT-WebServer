@@ -1,2 +1,1 @@
-{"id":"esp32-sensor-v1","name":"ESP32 Sensor v1","version":"1.0.0","device_family":"esp32","description":"Main sensor firmware","binary_path":"esp32-sensor-v1.bin","elf_path":"esp32-sensor-v1.elf","enabled":true}
-{"id":"esp32-gateway-v2","name":"ESP32 Gateway v2","version":"2.1.0","device_family":"esp32","description":"Gateway firmware with mesh support","binary_path":"esp32-gateway-v2.bin","elf_path":"esp32-gateway-v2.elf","enabled":true}
+{"id":"firmware-wbsm-lc-ext","name":"firmware-wbsm-lc-ext","version":"2.1.0","device_family":"esp32","description":"Main sensor firmware","binary_path":"firmware-wbsm-lc-ext.bin","elf_path":"firmware-wbsm-lc-ext.elf","enabled":true}

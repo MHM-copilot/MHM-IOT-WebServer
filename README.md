@@ -1,6 +1,6 @@
 # MHM-IOT-WebServer
 
-Aplicação web para catalogar binários de firmware para dispositivos IoT e disponibilizar as versões `.bin` e `.elf` em um fluxo protegido por senha.
+Aplicação web para catalogar binários de firmware para dispositivos IoT e disponibilizar as versões `.bin` publicamente e `.elf` em fluxo protegido por senha.
 
 ## Visão geral
 
@@ -40,7 +40,7 @@ Variaveis principais:
 - `APP_PORT`: porta HTTP
 - `APP_SECRET_KEY`: chave interna da aplicacao
 - `APP_PROTECTED_USERNAME`: usuario para acessos protegidos
-- `APP_PROTECTED_PASSWORD`: senha para acessar `.bin` e `.elf`
+- `APP_PROTECTED_PASSWORD`: senha para acessar `.elf` e demais artefatos protegidos
 - `APP_CONFIG_PATH`: caminho do arquivo JSONL de firmware
 - `APP_FIRMWARE_ROOT`: raiz dos arquivos binarios e ELF
 
@@ -72,18 +72,25 @@ Acesse:
 
 - http://localhost:8000/ para ver o catalogo publico
 - http://localhost:8000/firmware/esp32-sensor-v1 para ver o detalhe
-- rotas protegidas sob `/protected/download/{firmware_id}/{artifact}` exigem Basic Auth
+- o download do arquivo `.bin` é público em `/download/{firmware_id}/bin`
+- o download do arquivo `.elf` exige Basic Auth em `/protected/download/{firmware_id}/elf`
 
 ## Acesso protegido
 
-As rotas de download protegidas exigem autenticacao HTTP Basic.
+O download do arquivo binario fica publico. O arquivo ELF continua protegido por autenticacao HTTP Basic.
 
 Exemplo:
 
 - Usuario: `admin`
 - Senha: `change-me`
 
-A configuracao deve ser alterada em `.env` para ambientes reais.
+Para ambientes reais, prefira configurar `APP_PROTECTED_PASSWORD_HASH` com um valor gerado a partir de PBKDF2 e manter a senha em claro apenas em desenvolvimento. O projeto ainda aceita `APP_PROTECTED_PASSWORD` para compatibilidade.
+
+## Upload de firmware
+
+A interface administrativa em `/admin/upload` permite enviar um arquivo `.bin` e um `.elf` para o mesmo dispositivo, gerar a entrada no JSONL e publicar o firmware no catalogo.
+
+A rota exige autenticao Basic Auth e salva os arquivos no diretorio configurado em `APP_FIRMWARE_ROOT`.
 
 ## Docker
 
@@ -123,5 +130,6 @@ firmware/
 
 - O projeto foi desenhado para ser extensivel e parametrizavel.
 - A parte publica mostra o catalogo e os metadados.
-- Apenas a entrega dos artefatos em `/protected/download` exige autenticao.
+- O `.bin` pode ser baixado sem autenticação;
+- o `.elf` exige autenticação em `/protected/download`.
 - A estrutura foi organizada para facilitar uso em ambientes de CI/CD e deploy containerizado.

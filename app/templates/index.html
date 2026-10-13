@@ -78,6 +78,7 @@
       <header class="header">
         <h1>{{ title }}</h1>
         <p class="subtitle">Public firmware catalog for connected devices.</p>
+        <p><a href="{{ url_for('upload_form') }}">Upload firmware</a></p>
       </header>
 
       {% if entries %}

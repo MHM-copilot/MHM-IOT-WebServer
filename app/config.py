@@ -24,6 +24,8 @@ def get_settings() -> dict[str, Any]:
         "secret_key": os.getenv("APP_SECRET_KEY", "change-me"),
         "protected_username": os.getenv("APP_PROTECTED_USERNAME", "admin"),
         "protected_password": os.getenv("APP_PROTECTED_PASSWORD", "change-me"),
+        "protected_password_hash": os.getenv("APP_PROTECTED_PASSWORD_HASH", ""),
+        "password_salt": os.getenv("APP_PASSWORD_SALT", "mhm-iot-webserver"),
         "config_path": Path(config_path),
         "firmware_root": Path(firmware_root),
     }
@@ -37,6 +39,22 @@ def _safe_path(base_dir: Path, raw_path: str | None) -> Path:
     if candidate.is_absolute():
         return candidate
     return (base_dir / candidate).resolve()
+
+
+def _serialize_entry(entry: dict[str, Any], firmware_root: Path) -> dict[str, Any]:
+    payload = dict(entry)
+    binary_path = Path(payload.get("binary_path") or "")
+    elf_path = Path(payload.get("elf_path") or "")
+
+    if binary_path.is_absolute() and firmware_root in binary_path.parents or binary_path == firmware_root:
+        payload["binary_path"] = str(binary_path.relative_to(firmware_root))
+    if elf_path.is_absolute() and firmware_root in elf_path.parents or elf_path == firmware_root:
+        payload["elf_path"] = str(elf_path.relative_to(firmware_root))
+
+    payload["binary_exists"] = bool(payload.get("binary_exists"))
+    payload["elf_exists"] = bool(payload.get("elf_exists"))
+    payload["enabled"] = bool(payload.get("enabled", True))
+    return payload
 
 
 def _normalize_entry(raw_entry: dict[str, Any], firmware_root: Path) -> dict[str, Any]:
@@ -57,6 +75,20 @@ def _normalize_entry(raw_entry: dict[str, Any], firmware_root: Path) -> dict[str
     entry["elf_exists"] = elf_path.exists()
     entry["enabled"] = bool(entry.get("enabled", True))
     return entry
+
+
+def append_firmware_entry(entry: dict[str, Any], config_path: Path | None = None) -> dict[str, Any]:
+    settings = get_settings()
+    config_file = config_path or settings["config_path"]
+    firmware_root = settings["firmware_root"]
+    normalized = _normalize_entry(entry, firmware_root)
+    serialized = _serialize_entry(normalized, firmware_root)
+
+    config_file.parent.mkdir(parents=True, exist_ok=True)
+    with config_file.open("a", encoding="utf-8") as handle:
+        handle.write(json.dumps(serialized, ensure_ascii=False) + "\n")
+
+    return normalized
 
 
 def load_firmware_entries(config_path: Path | None = None) -> list[dict[str, Any]]:
