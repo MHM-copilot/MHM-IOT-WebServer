@@ -188,6 +188,14 @@ async def public_download_bin(firmware_id: str):
     return _serve_firmware_artifact(entry, "bin", require_auth=False)
 
 
+@app.get("/dowload/{firmware_id}/bin")
+async def legacy_public_download_bin(firmware_id: str):
+    entry = get_firmware_by_id(firmware_id)
+    if entry is None:
+        raise HTTPException(status_code=404, detail="Firmware not found")
+    return RedirectResponse(url=f"/download/{firmware_id}/bin", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
+
+
 @app.get("/protected/download/{firmware_id}/elf")
 async def protected_download_elf(
     firmware_id: str,
@@ -197,6 +205,17 @@ async def protected_download_elf(
     if entry is None:
         raise HTTPException(status_code=404, detail="Firmware not found")
     return _serve_firmware_artifact(entry, "elf", require_auth=True, credentials=credentials)
+
+
+@app.get("/protected/dowload/{firmware_id}/elf")
+async def legacy_protected_download_elf(
+    firmware_id: str,
+    credentials: HTTPBasicCredentials | None = Depends(HTTPBasic(auto_error=False)),
+):
+    entry = get_firmware_by_id(firmware_id)
+    if entry is None:
+        raise HTTPException(status_code=404, detail="Firmware not found")
+    return RedirectResponse(url=f"/protected/download/{firmware_id}/elf", status_code=status.HTTP_307_TEMPORARY_REDIRECT)
 
 
 @app.get("/protected/download/{firmware_id}/{artifact}")
