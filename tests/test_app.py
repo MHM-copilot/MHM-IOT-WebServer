@@ -79,8 +79,16 @@ def test_protected_download_requires_auth_for_elf_only(tmp_path, monkeypatch):
     assert public_response.status_code == 200
     assert public_response.content == (firmware_dir / "esp32-sensor-v1.bin").read_bytes()
 
+    legacy_public_response = client.get("/dowload/esp32-sensor-v1/bin", follow_redirects=False)
+    assert legacy_public_response.status_code == 307
+    assert legacy_public_response.headers["location"] == "/download/esp32-sensor-v1/bin"
+
     protected_response = client.get("/protected/download/esp32-sensor-v1/elf")
     assert protected_response.status_code == 401
+
+    legacy_protected_response = client.get("/protected/dowload/esp32-sensor-v1/elf", follow_redirects=False)
+    assert legacy_protected_response.status_code == 307
+    assert legacy_protected_response.headers["location"] == "/protected/download/esp32-sensor-v1/elf"
 
     auth_response = client.get("/protected/download/esp32-sensor-v1/elf", auth=("admin", "change-me"))
     assert auth_response.status_code == 200
