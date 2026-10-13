@@ -19,6 +19,6 @@ services:
       APP_CONFIG_PATH: ${APP_CONFIG_PATH:-/app/config/firmware.jsonl}
       APP_FIRMWARE_ROOT: ${APP_FIRMWARE_ROOT:-/app/firmware}
     volumes:
-      - ./config:/app/config:ro
-      - ./firmware:/app/firmware:ro
+      - ./config:/app/config
+      - ./firmware:/app/firmware
     restart: unless-stopped
