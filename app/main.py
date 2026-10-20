@@ -17,7 +17,6 @@ settings = get_settings()
 app = FastAPI(title=settings["app_title"])
 security = HTTPBasic()
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent / "templates"))
-ALLOWED_EXTENSIONS = {".bin": "binary", ".elf": "elf"}
 
 
 def _derive_password_hash(password: str) -> str:
@@ -82,9 +81,9 @@ async def _save_uploaded_file(upload: UploadFile, destination: Path) -> None:
 async def index(request: Request):
     entries = load_firmware_entries()
     return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
+        request=request,
+        name="index.html",
+        context={
             "title": settings["app_title"],
             "entries": entries,
         },
@@ -95,8 +94,9 @@ async def index(request: Request):
 async def upload_form(request: Request, username: str = Depends(verify_credentials)):
     del username
     return templates.TemplateResponse(
-        "upload.html",
-        {"request": request, "title": settings["app_title"]},
+        request=request,
+        name="upload.html",
+        context={"title": settings["app_title"]},
     )
 
 
@@ -151,9 +151,9 @@ async def firmware_detail(request: Request, firmware_id: str):
         raise HTTPException(status_code=404, detail="Firmware not found")
 
     return templates.TemplateResponse(
-        "firmware_detail.html",
-        {
-            "request": request,
+        request=request,
+        name="firmware_detail.html",
+        context={
             "title": settings["app_title"],
             "entry": entry,
         },

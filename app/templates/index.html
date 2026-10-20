@@ -105,7 +105,11 @@
               <td>{{ entry.version }}</td>
               <td><span class="badge">{{ entry.device_family }}</span></td>
               <td>{{ entry.id }}</td>
-              <td><a href="{{ url_for('firmware_detail', firmware_id=entry.id) }}">Details</a></td>
+              <td>
+                <a href="{{ url_for('firmware_detail', firmware_id=entry.id) }}">Details</a>
+                &middot;
+                <a href="{{ url_for('public_download_bin', firmware_id=entry.id) }}" download>Download .bin</a>
+              </td>
             </tr>
             {% endfor %}
           </tbody>
