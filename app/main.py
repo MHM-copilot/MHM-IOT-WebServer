@@ -10,13 +10,25 @@ from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, Upload
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.templating import Jinja2Templates
+from jinja2 import pass_context
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
 from app.config import append_firmware_entry, get_settings, load_firmware_entries
 
 settings = get_settings()
 app = FastAPI(title=settings["app_title"])
+app.add_middleware(ProxyHeadersMiddleware, trusted_hosts="*")
 security = HTTPBasic()
 templates = Jinja2Templates(directory=str(Path(__file__).resolve().parent / "templates"))
+
+
+@pass_context
+def _relative_url_for(context: dict, name: str, /, **path_params: object) -> str:
+    request: Request = context["request"]
+    return request.url_for(name, **path_params).path
+
+
+templates.env.globals["url_for"] = _relative_url_for
 
 
 def _derive_password_hash(password: str) -> str:

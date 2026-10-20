@@ -138,3 +138,18 @@ def test_upload_firmware_requires_auth_and_persists_metadata(tmp_path, monkeypat
     assert uploaded_entry["version"] == "2.0.0"
     assert (firmware_dir / "esp32-sensor-v2.bin").exists()
     assert (firmware_dir / "esp32-sensor-v2.elf").exists()
+
+
+def test_links_are_root_relative_to_prevent_mixed_content(tmp_path, monkeypatch):
+    client, _, _ = _build_client(tmp_path, monkeypatch)
+
+    detail_response = client.get("/firmware/esp32-sensor-v1")
+    assert detail_response.status_code == 200
+    assert 'href="/download/esp32-sensor-v1/bin"' in detail_response.text
+    assert 'href="/protected/download/esp32-sensor-v1/elf"' in detail_response.text
+    assert "http://testserver/download" not in detail_response.text
+
+    index_response = client.get("/")
+    assert index_response.status_code == 200
+    assert 'href="/download/esp32-sensor-v1/bin"' in index_response.text
+    assert "http://testserver" not in index_response.text
